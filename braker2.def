@@ -1,92 +1,46 @@
 Bootstrap: docker
-From:ubuntu:focal
+From:continuumio/miniconda3:latest
 
 %files
-    $PWD/gmes_linux_64_4.tar.gz /
-    $PWD/BRAKER-2.1.6.tar.gz /
-    $PWD/diamond-linux64.tar.gz /
-    $PWD/ProtHint-2.6.0.tar.gz /
-    $PWD/cdbfasta-master.zip /
-    $PWD/augustus-3.4.0.tar.gz /
-    $PWD/gm_key_64.gz /
+    # $PWD/ProtHint-2.6.0.tar.gz /opt
+    $PWD/gm_key_64.gz /opt
+    $PWD/gmes_linux_64_4.tar.gz /opt
+    $PWD/braker.xyx.pl /opt/conda/bin
+    # $PWD/augustus-3.4.0.tar.gz /opt
 
 %environment
     export DEBIAN_FRONTEND="noninteractive"
     export TZ="Asia/Shanghai"
-    export GENEMARK_PATH="/gmes_linux_64_4/"
-    export PATH="/gmes_linux_64_4/":$PATH
-    export DIAMOND_PATH="/"
-    export PROTHINT_PATH="/ProtHint/bin"
-    export CDBTOOLS_PATH="/cdbfasta"
-    export PATH="/Augustus/bin:/Augustus/scripts":$PATH
-    export AUGUSTUS_CONFIG_PATH="/Augustus/config/"
-    export PATH="/BRAKER/scripts/":$PATH
+    export GENEMARK_PATH="/opt/gmes_linux_64_4/"    
+    export PROTHINT_PATH="/opt/ProtHint/bin"
+    export HOME="/opt"
+    export PATH="/opt/conda/bin:/opt/gmes_linux_64_4/:/opt/augustus/bin:/opt/augustus/scripts":$PATH
+    export AUGUSTUS_BIN_PATH="/opt/augustus/bin"
+    export AUGUSTUS_SCRIPTS_PATH="/opt/augustus/scripts"
+    export AUGUSTUS_CONFIG_PATH="/opt/augustus/config"
+    export DRMAA_LIBRARY_PATH="/usr/lib/gridengine-drmaa/lib/libdrmaa.so.1.0"
+    export LD_LIBRARY_PATH="/opt/conda/lib":$LD_LIBRARY_PATH
+    export C_INCLUDE_PATH="/opt/conda/include":$C_INCLUDE_PATH
+    export CPLUS_INCLUDE_PATH="/opt/conda/include":$CPLUS_INCLUDE_PATH
+    export LIBRARY_PATH="/opt/conda/lib":$LIBRARY_PATH    
 
 %post
     export DEBIAN_FRONTEND="noninteractive"
     export TZ="Asia/Shanghai"
+    export PATH="/opt/conda/bin:$PATH"
+    export LD_LIBRARY_PATH="/opt/conda/lib":$LD_LIBRARY_PATH
+    export C_INCLUDE_PATH="/opt/conda/include":$C_INCLUDE_PATH
+    export CPLUS_INCLUDE_PATH="/opt/conda/include":$CPLUS_INCLUDE_PATH
+    export LIBRARY_PATH="/opt/conda/lib":$LIBRARY_PATH
+    export HOME="/opt"
+
     apt update && apt upgrade -y -q
 
-    ####################################################################################
-    # Install dependencies with aptitude
-    ####################################################################################
-    apt install -y -q \
-        git cmake cpanminus build-essential autoconf automake make gcc perl python \
-        zlib1g-dev libbz2-dev liblzma-dev libcurl4-gnutls-dev libssl-dev libncurses5-dev \
-        libboost-iostreams-dev libboost-system-dev libboost-filesystem-dev \
-        wget gzip apt-utils zip
+    conda config --add channels defaults
+    conda config --add channels bioconda
+    conda config --add channels conda-forge
 
-    ####################################################################################
-    # Install required Perl CPAN modules
-    ####################################################################################
-    cpanm --force File::Spec::Functions Hash::Merge List::Util MCE::Mutex \
-        Module::Load::Conditional Parallel::ForkManager POSIX Scalar::Util::Numeric \
-        YAML Math::Utils File::HomeDir threads;
-
-    ####################################################################################
-    # Get GeneMark-ES/ET/EP
-    ####################################################################################
-    # Manually download GenMark ES Software and Licence from:
-    # http://topaz.gatech.edu/GeneMark/license_download.cgi
-    # For example, select: GeneMark-ES/ET/EP ver 4.69_lic for LINUX 64
-    # and save it inside the folder where the Dockerfile is located
-    cd /
-    tar -xzf /gmes_linux_64_4.tar.gz
-    rm /gmes_linux_64_4.tar.gz
-
-    ####################################################################################
-    # BRAKER
-    ####################################################################################
-    #http://topaz.gatech.edu/GeneMark/braker.html
-    tar -xzf /BRAKER-2.1.6.tar.gz
-    mv /BRAKER-2.1.6 /BRAKER
-    # Set perms
-    chmod a+x /BRAKER/scripts/*.pl; chmod a+x /BRAKER/scripts/*.py
-
-    ####################################################################################
-    # SAMTOOLS & BAMTOOLS
-    ####################################################################################
-    apt-get install samtools -y -q
-    apt-get install bamtools -y -q
-
-    ####################################################################################
-    # DIAMOND
-    ####################################################################################
-    tar -xzvf /diamond-linux64.tar.gz
-
-    ####################################################################################
-    # ProtHint
-    ####################################################################################
-    tar -xzvf /ProtHint-2.6.0.tar.gz
-    mv /ProtHint-2.6.0 /ProtHint
-
-    ####################################################################################
-    # cdbfasta
-    ####################################################################################
-    unzip cdbfasta-master.zip
-    mv /cdbfasta-master /cdbfasta
-    cd /cdbfasta
-    make all
+    conda install -y -c conda-forge mamba
 
     ####################################################################################
     # AUGUSTUS
@@ -95,55 +49,85 @@ From:ubuntu:focal
     # source: https://github.com/Gaius-Augustus/Augustus/blob/master/Dockerfile
     # Install required packages
     apt-get update
+    apt-get install -y gridengine-drmaa-dev gridengine-common
     apt-get install -y build-essential wget git autoconf
-
-    # Install dependencies for AUGUSTUS comparative gene prediction mode (CGP)
     apt-get install -y libgsl-dev libboost-all-dev libsuitesparse-dev liblpsolve55-dev
     apt-get install -y libsqlite3-dev libmysql++-dev
-
-    # Install dependencies for the optional support of gzip compressed input files
     apt-get install -y libboost-iostreams-dev zlib1g-dev
-
-    # Install dependencies for bam2hints and filterBam
     apt-get install -y libbamtools-dev
-
-    # Install additional dependencies for bam2wig
     apt-get install -y samtools libhts-dev
-
-    # Install additional dependencies for homGeneMapping and utrrnaseq
     apt-get install -y libboost-all-dev
-
-    # Install additional dependencies for scripts
     apt-get install -y cdbfasta diamond-aligner libfile-which-perl libparallel-forkmanager-perl libyaml-perl libdbd-mysql-perl
     apt-get install -y --no-install-recommends python3-biopython
 
-    # Install hal - required by homGeneMapping
-    # execute the commented out code if you want to use this program - see auxprogs/homGeneMapping/Dockerfile
-    #RUN apt-get install -y libhdf5-dev
-    #RUN git clone https://github.com/benedictpaten/sonLib.git /opt/sonLib
-    #WORKDIR /opt/sonLib
-    #RUN make
-    #RUN git clone https://github.com/ComparativeGenomicsToolkit/hal.git /opt/hal
-    #WORKDIR /opt/hal
-    #ENV RANLIB=ranlib
-    #RUN make
-    #ENV PATH="${PATH}:/opt/hal/bin"
-
     # Clone AUGUSTUS repository
-    cd /
-    tar -xzvf /augustus-3.4.0.tar.gz
-    mv /augustus-3.4.0 /Augustus
+    cd /opt
+    wget https://github.com/Gaius-Augustus/Augustus/releases/download/v3.4.0/augustus-3.4.0.tar.gz
+    tar -xzvf /opt/augustus-3.4.0.tar.gz
+    mv /opt/augustus-3.4.0 /opt/augustus
+    rm /opt/augustus-3.4.0.tar.gz
 
     # Build AUGUSTUS
-    cd /Augustus
+    cd /opt/augustus
     pwd
     ls -hal ./
     make clean
     make
     make install
-    chmod 0777 -Rfv /Augustus/config
+    chmod 0777 -Rfv /opt/augustus/config
     # Test AUGUSTUS
     make unit_test
+    export PATH="/opt/conda/bin:/opt/gmes_linux_64_4/:/opt/augustus/bin:/opt/augustus/scripts":$PATH
+    export AUGUSTUS_CONFIG_PATH="/opt/augustus/config"
     ### END
 
-    zcat /gm_key_64.gz > ~/.gm_key
+    ####################################################################################
+    # Install Tools with Mamba
+    ####################################################################################
+    mamba install -y diamond augustus braker2
+
+    mv /opt/conda/bin/augustus /opt/conda/bin/augustus.bak
+    mv /opt/conda/bin/etraining /opt/conda/bin/etraining.bak
+    mv /opt/conda/bin/gff2gbSmallDNA.pl /opt/conda/bin/gff2gbSmallDNA.pl.bak
+    mv /opt/conda/bin/new_species.pl /opt/conda/bin/new_species.pl.bak
+    mv /opt/conda/bin/optimize_augustus.pl /opt/conda/bin/optimize_augustus.pl.bak
+
+    ####################################################################################
+    # Get GeneMark-ES/ET/EP
+    ####################################################################################
+    # Manually download GenMark ES Software and Licence from:
+    # http://topaz.gatech.edu/GeneMark/license_download.cgi
+    # For example, select: GeneMark-ES/ET/EP ver 4.69_lic for LINUX 64
+    # and save it inside the folder where the Dockerfile is located
+    cd /opt
+    tar -xzf gmes_linux_64_4.tar.gz
+    rm gmes_linux_64_4.tar.gz
+    cd /opt/gmes_linux_64_4
+    ./change_path_in_perl_scripts.pl /opt/conda/bin/perl
+    zcat /opt/gm_key_64.gz > ~/.gm_key
+
+    ####################################################################################
+    # ProtHint
+    ####################################################################################
+    cd /opt
+    wget https://github.com/gatech-genemark/ProtHint/releases/download/v2.6.0/ProtHint-2.6.0.tar.gz
+    tar -xzvf ProtHint-2.6.0.tar.gz
+    mv ProtHint-2.6.0 ProtHint
+    rm ProtHint-2.6.0.tar.gz
+
+    mv /opt/conda/bin/braker.pl /opt/conda/bin/braker.raw.pl
+    chmod 775 /opt/conda/bin/braker.raw.pl
+
+    mv /opt/conda/bin/braker.xyx.pl /opt/conda/bin/braker.pl
+    chmod 775 /opt/conda/bin/braker.pl
+
+    mamba clean --all -f --yes
+    conda clean --all -f --yes
+    apt-get clean -y
+
+%runscript
+    exec braker.pl "$@"
+
+%labels
+    Author XYX
+    Versino v0.2.0

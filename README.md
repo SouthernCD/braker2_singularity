@@ -8,24 +8,18 @@ Copy this repository
 git clone https://github.com/SouthernCD/braker2_singularity.git
 ```
 
-Go to the directory and download the dependencies
+Get license file (named `gm_key_64.gz`) for GeneMark(GeneMark-ES/ET/EP ver 4.69_lic) from [here](http://topaz.gatech.edu/GeneMark/license_download.cgi), and save this file in `braker2_singularity`.
+
+Go to the directory and build container
 ```
 cd braker2_singularity
-wget https://github.com/Gaius-Augustus/Augustus/releases/download/v3.4.0/augustus-3.4.0.tar.gz
-wget https://github.com/bbuchfink/diamond/releases/download/v2.0.15/diamond-linux64.tar.gz
-wget https://github.com/gatech-genemark/ProtHint/releases/download/v2.6.0/ProtHint-2.6.0.tar.gz
-zcat gm_key_64.gz > ~/.gm_key
-```
-
-Build singularity
-```
-singularity build braker2.sif braker2.def
+sudo singularity build braker2.sif braker2.def
 ```
 
 ## Usage
 
 ```
-singularity run --writable-tmpfs braker2.sif braker.pl --genome input/genome.fa --bam input/RNAseq.bam --softmasking --cores 20
+singularity run -e braker2.sif --genome input/genome.fa --bam input/RNAseq.bam --softmasking --cores 20
 ```
 
 For detail see https://github.com/Gaius-Augustus/BRAKER

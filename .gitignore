@@ -1,0 +1,6 @@
+.vscode
+
+# singularity
+*.sandbox
+*.sandbox/
+*.sif
