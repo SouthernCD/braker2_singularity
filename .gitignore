@@ -1,5 +1,7 @@
 .vscode
 
+gm_key_64.gz
+
 # singularity
 *.sandbox
 *.sandbox/

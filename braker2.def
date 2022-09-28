@@ -6,6 +6,8 @@ From:continuumio/miniconda3:latest
     $PWD/gm_key_64.gz /opt
     $PWD/gmes_linux_64_4.tar.gz /opt
     $PWD/braker.xyx.pl /opt/conda/bin
+    $PWD/prothint.py /opt
+    $PWD/run_spliced_alignment.py /opt
     # $PWD/augustus-3.4.0.tar.gz /opt
 
 %environment
@@ -114,6 +116,13 @@ From:continuumio/miniconda3:latest
     tar -xzvf ProtHint-2.6.0.tar.gz
     mv ProtHint-2.6.0 ProtHint
     rm ProtHint-2.6.0.tar.gz
+
+    pip install toolbiox
+    mv /opt/ProtHint/bin/prothint.py prothint.py.bak
+    mv /opt/prothint.py /opt/ProtHint/bin
+    chmod 755 /opt/ProtHint/bin/prothint.py
+    mv /opt/run_spliced_alignment.py /opt/ProtHint/bin
+    chmod 755 /opt/ProtHint/bin/run_spliced_alignment.py
 
     mv /opt/conda/bin/braker.pl /opt/conda/bin/braker.raw.pl
     chmod 775 /opt/conda/bin/braker.raw.pl
