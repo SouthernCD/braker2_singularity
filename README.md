@@ -1,5 +1,5 @@
 # braker2_singularity
-Singularity container for running [BRAKER2](https://github.com/Gaius-Augustus/BRAKER), a container contains all the dependencies needed by BRAKER.
+Singularity container for running [BRAKER2](https://github.com/Gaius-Augustus/BRAKER), a container contains all the dependencies needed by BRAKER. In addition, I rewrote the Spaln call script in ProtHint via python to get this extremely slow process to work.
 
 ## Installation
 
@@ -8,7 +8,7 @@ Copy this repository
 git clone https://github.com/SouthernCD/braker2_singularity.git
 ```
 
-Get license file (named `gm_key_64.gz`) for GeneMark(GeneMark-ES/ET/EP ver 4.69_lic) from [here](http://topaz.gatech.edu/GeneMark/license_download.cgi), and save this file in `braker2_singularity`.
+Get license file (named `gm_key_64.gz`) for GeneMark(GeneMark-ES/ET/EP ver 4.69_lic, LINUX 64 kernel 3.10 - 5) from [here](http://topaz.gatech.edu/GeneMark/license_download.cgi), and save this file in `braker2_singularity`.
 
 Go to the directory and build container
 ```

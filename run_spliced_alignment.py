@@ -6,6 +6,7 @@ import sys
 from toolbiox.lib.common.os import mkdir, cmd_run, rmdir, multiprocess_running
 from toolbiox.lib.common.fileIO import tsv_file_dict_parse
 from toolbiox.lib.common.genome.seq_base import read_fasta
+from toolbiox.lib.common.util import logging_init, time_now
 import math
 
 
@@ -90,6 +91,9 @@ pair_list = tsv_file_dict_parse(list_file, fieldnames=['q', 's'])
 pair_list = [(pair_list[i]['q'], pair_list[i]['s']) for i in pair_list]
 
 work_dir = os.path.abspath(os.getcwd())
+log_file = work_dir + "/log"
+module_log = logging_init("run_spliced_alignment", log_file)
+
 spaln_dir = work_dir + "/spaln"
 # mkdir(spaln_dir)
 
@@ -110,7 +114,8 @@ for i in range(math.ceil(len(pair_list)/step)):
     for j in sub_mlt_out:
         mlt_out[num] = sub_mlt_out[j]
         num += 1
-    print(num, len(pair_list))
+    module_log.info('%s\t%d/%d %.2f%% parsed' %
+                    (time_now(), num, len(pair_list), num / len(pair_list) * 100))
 
 out_file_regions = os.path.join(work_dir, "spaln.regions.gff")
 

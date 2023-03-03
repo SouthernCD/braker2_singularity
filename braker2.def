@@ -1,13 +1,13 @@
 Bootstrap: docker
-From:continuumio/miniconda3:latest
+From:continuumio/miniconda3:4.12.0
 
 %files
     # $PWD/ProtHint-2.6.0.tar.gz /opt
-    $PWD/gm_key_64.gz /opt
-    $PWD/gmes_linux_64_4.tar.gz /opt
-    $PWD/braker.xyx.pl /opt/conda/bin
-    $PWD/prothint.py /opt
-    $PWD/run_spliced_alignment.py /opt
+    gm_key_64.gz /opt
+    gmes_linux_64_4.tar.gz /opt
+    braker.xyx.pl /opt/conda/bin
+    prothint.py /opt
+    run_spliced_alignment.py /opt
     # $PWD/augustus-3.4.0.tar.gz /opt
 
 %environment
@@ -139,4 +139,4 @@ From:continuumio/miniconda3:latest
 
 %labels
     Author XYX
-    Versino v0.2.0
+    Versino v0.3.0
