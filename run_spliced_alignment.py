@@ -45,21 +45,11 @@ def spaln_job(nuc_file, prot_file, out_file, tmp_dir, mode, alignmentLength):
     except:
         out_string = "error"
 
-    # try:
-    #     rmdir(nuc_file)
-    #     rmdir(prot_file)
-    #     rmdir(out_file)
-    # except:
-    #     pass
-
     return out_string
 
 
 BIN_DIR = os.path.dirname(os.path.abspath(__file__))
 SPALN_DIR = BIN_DIR + "/../dependencies/"
-
-# BIN_DIR = "/lustre/home/xuyuxing/Program/ProtHint/ProtHint/bin"
-# SPALN_DIR = "/lustre/home/xuyuxing/Program/ProtHint/ProtHint/dependencies"
 
 SPALN_PATH = os.path.join(SPALN_DIR, 'spaln')
 SPALN_BOUNDARY_SCORER_PATH = os.path.join(
@@ -73,12 +63,6 @@ prot_file = sys.argv[2]
 list_file = sys.argv[3]
 cores = int(sys.argv[4])
 min_exon_score = int(sys.argv[5])
-
-# nuc_file = "/lustre/home/xuyuxing/tmp/Typha_latifolia/PlantAnno_out/2.BRAKER2/braker/nuc.fasta"
-# prot_file = "/lustre/home/xuyuxing/tmp/Typha_latifolia/PlantAnno_out/2.BRAKER2/braker/protv3gcxfjf"
-# list_file = "/lustre/home/xuyuxing/tmp/Typha_latifolia/PlantAnno_out/2.BRAKER2/braker/diamond/diamond.out"
-# cores = 40
-# min_exon_score = 1000
 
 long_gene = 30000
 long_protein = 15000
